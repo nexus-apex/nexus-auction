@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Auctionitems | NexusAuction{% endblock %}
+{% block page_title %}Auctionitems{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search auctionitems...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="upcoming" {% if status_filter == 'upcoming' %}selected{% endif %}>Upcoming</option>
+      <option value="live" {% if status_filter == 'live' %}selected{% endif %}>Live</option>
+      <option value="sold" {% if status_filter == 'sold' %}selected{% endif %}>Sold</option>
+      <option value="unsold" {% if status_filter == 'unsold' %}selected{% endif %}>Unsold</option>
+      <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/auctionitems/create/" class="btn btn-primary">+ New AuctionItem</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Title</th><th>Category</th><th>Starting Price</th><th>Current Bid</th><th>Bids Count</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/auctionitems/{{ r.pk }}/edit/"><strong>{{ r.title }}</strong></a></td>
+        <td>{{ r.category|default:"-" }}</td>
+        <td>{{ r.starting_price|floatformat:2 }}</td>
+        <td>{{ r.current_bid|floatformat:2 }}</td>
+        <td>{{ r.bids_count|default:"-" }}</td>
+        <td class="actions">
+          <a href="/auctionitems/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/auctionitems/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No auctionitems found.</p>
+    <a href="/auctionitems/create/" class="btn btn-primary" style="margin-top:1rem">Create AuctionItem</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
