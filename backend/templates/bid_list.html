@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Bids | NexusAuction{% endblock %}
+{% block page_title %}Bids{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search bids...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+      <option value="outbid" {% if status_filter == 'outbid' %}selected{% endif %}>Outbid</option>
+      <option value="won" {% if status_filter == 'won' %}selected{% endif %}>Won</option>
+      <option value="retracted" {% if status_filter == 'retracted' %}selected{% endif %}>Retracted</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/bids/create/" class="btn btn-primary">+ New Bid</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Item Title</th><th>Bidder Name</th><th>Amount</th><th>Bid Time</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/bids/{{ r.pk }}/edit/"><strong>{{ r.item_title }}</strong></a></td>
+        <td>{{ r.bidder_name|default:"-" }}</td>
+        <td>{{ r.amount|floatformat:2 }}</td>
+        <td style="color:var(--muted)">{{ r.bid_time|date:"M d, Y"|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_status_display }}</span></td>
+        <td class="actions">
+          <a href="/bids/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/bids/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No bids found.</p>
+    <a href="/bids/create/" class="btn btn-primary" style="margin-top:1rem">Create Bid</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
