@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit{% else %}New{% endif %} AuctionItem | NexusAuction{% endblock %}
+{% block page_title %}{% if editing %}Edit AuctionItem{% else %}New AuctionItem{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:750px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" value="{{ record.title|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <input type="text" name="category" value="{{ record.category|default:'' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Starting Price</label>
+        <input type="number" step="0.01" name="starting_price" value="{{ record.starting_price|default:'0' }}">
+      </div>
+      <div class="form-group">
+        <label>Current Bid</label>
+        <input type="number" step="0.01" name="current_bid" value="{{ record.current_bid|default:'0' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Bids Count</label>
+        <input type="number" name="bids_count" value="{{ record.bids_count|default:'0' }}">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="upcoming" {% if record.status == 'upcoming' %}selected{% endif %}>Upcoming</option>
+          <option value="live" {% if record.status == 'live' %}selected{% endif %}>Live</option>
+          <option value="sold" {% if record.status == 'sold' %}selected{% endif %}>Sold</option>
+          <option value="unsold" {% if record.status == 'unsold' %}selected{% endif %}>Unsold</option>
+          <option value="cancelled" {% if record.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Start Time</label>
+        <input type="date" name="start_time" value="{{ record.start_time|date:'Y-m-d'|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>End Time</label>
+        <input type="date" name="end_time" value="{{ record.end_time|date:'Y-m-d'|default:'' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Seller</label>
+        <input type="text" name="seller" value="{{ record.seller|default:'' }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description">{{ record.description|default:'' }}</textarea>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-top:1rem">
+      <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Create{% endif %} AuctionItem</button>
+      <a href="/auctionitems/" class="btn" style="background:var(--border);color:var(--text)">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
